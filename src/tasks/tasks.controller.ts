@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { TasksService } from 'src/tasks/tasks.service';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { UpdateTaskStatusDto } from 'src/tasks/dto/update-task-status.dto';
@@ -9,6 +9,8 @@ import { User } from 'src/auth/user.entity';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
+  private logger = new Logger('TasksController')
+
   constructor(private tasksService: TasksService) { }
 
   @Get('/:id')
@@ -21,6 +23,7 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() user: User
   ): Promise<Task> {
+    this.logger.verbose(`User "${user.username}" created a task: ${JSON.stringify(createTaskDto)}`)
     return this.tasksService.createTask(createTaskDto, user)
   }
 
